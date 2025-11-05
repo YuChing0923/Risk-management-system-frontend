@@ -1,7 +1,7 @@
 * [Project Structure](#project-structure)
   * [Folder Structure](#folder-structure)
   * [Project Architecture Diagram](#project-architecture-diagram)
-* [Basic Development Workflow](#basic-development-workflow)
+* [Development Workflow](#development-workflow)
   * [Adding a New Page](#adding-a-new-page)
   * [API Development Flow](#api-development-flow)
 * [Detailed Structure](#detailed-structure)
@@ -216,10 +216,11 @@ Context Contents
 │   ├── globalNotificationError // Show error notification
 ```
 
-### Hook
-| **Hook Name** | **Description** | **Parameters** | **Returns** | **Example Input** | **Example Output** |
-|--|--|--|--|--|--|
-|||||||
+### Hooks
+| **Hook Name** | **Description** |
+| ------------- | -------- | 
+| `useLogin`    | Manages user login logic, including automatic redirection, error handling, and state management. |
+| `usePageMount`| Handles shared logic and parameters for the `MainLayout`. **Includes:**<br>1. Menu collapse state (`collapsed`, `setCollapsed`, `toggleCollapsed`)<br>2. Page and breadcrumb data (`routerHandle`, `crumbs`)<br>3. Menu Permission API state (`MenuPermissionData`, `MenuPermissionError`, `MenuPermissionLoading`, `fetchMenuPermission`)<br>**Actions performed on mount:**<br>1. Redirects to home if required parameters are invalid.<br>2. Updates the document title for each page.<br>3. Re-fetches menu permissions on every page load. |
 
 ### Utils
 | **Function Name** | **Description** | **Parameters** | **Returns** | **Example Input** | **Example Output** |
@@ -261,9 +262,9 @@ REACT_APP_ACTIVE_SYSTEM_FEATURE=system_account_groups
 
 ### npm
 
-- npm version `9.5.1`，node.js version `21.3.0`
+- npm version `9.5.1`, node.js version `21.3.0`
 - Run `npm run start` to start the development server.
-- package.json script script settings:
+- package.json script settings:
   e.g., to use `.env.production` for the `build:prod` script, add the following to package.json scripts:
   `”build:prod": "dotenv -e .env.production craco build"`
 
@@ -282,7 +283,7 @@ REACT_APP_ACTIVE_SYSTEM_FEATURE=system_account_groups
   - `perf`: A code change that improves performance
   - `test`: Adding missing tests or correcting existing tests
   - `chore`: Changes to the build process or auxiliary tools
-  - `revert`: Reverts a previous commit (e.g.,`revert: type(scope): subject`)
+  - `revert`: Reverts a previous commit (e.g., `revert: type(scope): subject`)
 
 ### Related Documents
 - Backend Documentation
