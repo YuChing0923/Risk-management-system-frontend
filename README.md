@@ -1,3 +1,7 @@
+**About This Repository**
+- This repository is for demonstration purposes only. The original source code is not included to maintain confidentiality.
+- This `README.md` file details my methodology for structuring a complex front-end project, from its architecture and workflows to the detailed component and data flow management.
+
 * [Project Structure](#project-structure)
   * [Folder Structure](#folder-structure)
   * [Project Architecture Diagram](#project-architecture-diagram)
