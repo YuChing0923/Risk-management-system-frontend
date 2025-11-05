@@ -1,4 +1,25 @@
-[TOC]
+* [Project Structure](#project-structure)
+  * [Folder Structure](#folder-structure)
+  * [Project Architecture Diagram](#project-architecture-diagram)
+* [Basic Development Workflow](#basic-development-workflow)
+  * [Adding a New Page](#adding-a-new-page)
+  * [API Development Flow](#api-development-flow)
+* [Detailed Structure](#detailed-structure)
+  * [MainLayout](#mainlayout)
+  * [Menu](#menu)
+  * [Router](#router)
+  * [Context](#context)
+  * [Hooks](#hooks)
+  * [Utils](#utils)
+  * [Environment Variables (.env)](#environment-variables-env)
+* [Development Guidelines](#development-guidelines)
+  * [Frameworks & Tools](#frameworks--tools)
+  * [npm](#npm)
+  * [Git Workflow](#git-workflow)
+  * [Related Documents](#related-documents)
+
+---
+
 ## Project Structure
 
 ### Folder Structure
