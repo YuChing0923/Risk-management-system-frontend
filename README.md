@@ -26,44 +26,44 @@
 ```
 Risk-Management-Frontend
 ├── src
-│   ├── assets // 靜態資源
+│   ├── assets // Static assets
 │   │   ├── images
 │   │   ├── style
-│   │   ├── types // 內層資料夾依照專案結構（graphql 沒有再細分）
-│   │   ├── utils // 靜態 js function
+│   │   ├── types // Subfolders mirror project structure (graphql is flat)
+│   │   ├── utils // Static js function
 │   ├── configs
-│   │   ├── chartConfigs // 放置 charts 設定檔
-│   ├── components // 除特別標示外 不可直接引用、串接資料及使用 contexts
+│   │   ├── chartConfigs // Charts configurations
+│   ├── components // Avoid direct import, data fetching, or context usage unless specified
 │   │   ├── commons
-│   │   ├── MainLayout // 內頁主結構（header, menu等）可放全站用 API, contexts，處理每次進各頁面相關邏輯
-│   │   │   └──MainMenu // 頁面 Menu 設定
+│   │   ├── MainLayout // Main app layout (header, menu). Allowed global APIs, contexts, and page-load logic.
+│   │   │   └──MainMenu // Page menu configuration
 │   │   │   ├── UserMenu
 │   │   │   ├── SystemMenu
-│   │   ├── PrivateRoute // 確保內頁只可在已登入的狀態下顯示 可 contexts
+│   │   ├── PrivateRoute // Auth-protected route. Ensures page is only visible when authenticated. Allowed context usage.
 │   └── contexts
 │   └── graphql
 │   │   ├── mutations
 │   │   ├── queries
 │   │   ├── lazyQueries
 │   └── hooks
-│   └── pages // 全站頁面管理（pages 內容不可以放在 components～～）
+│   └── pages // Site page management (Pages must NOT be placed in /components)
 │   └── router
-│   └── services // Apollo client 設定（含 refresh token 邏輯）
-│   └── ApiProvider.tsx // 在這引入 services 的 Apollo 設定
-│   └── App.tsx // 在這處理初始進站邏輯（含 verify token 邏輯）
+│   └── services // Apollo client setup (includes refresh token logic)
+│   └── ApiProvider.tsx // Imports the Apollo client from services
+│   └── App.tsx // Handles app initialization (includes token verification)
 │   └── index.tsx
-├── .env // 環境變數
+├── .env // Environment variables
 ├── package.json
 ├── tsconfig.json
-├── tsconfig.paths.json // alias path 設定檔
+├── tsconfig.paths.json // tsconfig path aliases
 ```
 
 ---
 
 ### Project Architecture Diagram
 
-1. `./src/index.tsx` 為進入點，這層包含 `<GlobalProvider>` 及組件 `<ApiProvider>`
-2. `<ApiProvider>` 中引入 `./services/apolloClient` 相關 Apollo 設定，並帶入主頁面組件 `<App>`
+1. `./src/index.tsx` is the entry point, containing `<GlobalProvider>` and `<ApiProvider>`.
+2. `<ApiProvider>` imports the Apollo setup from `./services/apolloClient` and renders the main `<App>` component.
 
 ```mermaid
 stateDiagram-v2
@@ -111,21 +111,21 @@ PrivateRoute --> src/pages/Login.tsx: if none authenticated
 
 ### Adding a New Page
 
-1. 在 `pages/` 新增頁面檔案
-1. 在 `router/` 對應的檔案中新增相關設定（詳見 [Router](###router)）
-1. 在 `menu/` 對應的檔案中新增相關 Menu item（詳見 [Menu](###menu)）
-1. 在 `.env` 對應的變數中新增對應 feature 字串（詳見 [.env](###.env)）
+1. Create the new page file in `pages/`.
+1. Add the route configuration in the corresponding file under `router/`. (see [Router](#router))
+1. Add the menu item in the corresponding file under `menu/`. (see [Menu](#menu))
+1. Add the corresponding feature flag string to the `.env` variable.(see [Environment Variables (.env)](#environment-variables-env))
 
-* 注意 Menu key 對應的位置，`menu list`, `router` 及 `.env` 都要寫入才會看的到頁面
-* menu.key === router.menuName === .env feature 字串
+* Note: The page will only be visible when the key is correctly set in the `menu list`, `router` and `.env` file.
+* menu.key === router.menuName === .env feature string.
 
 ### API Development Flow
 
-1. 在 `graphql/` 新增 API query
-1. 將該 query 引入指定頁面，並參考 apollo client hook 用法串接 API
-1. 可在 `types/` 新增相關 query types，包含 variables & responses
+1. Add the new API query/mutation in `graphql/`.
+1. Import the query into the target page and use Apollo Client hooks for API integration.
+1. Add relevant query types (variables & responses) in `types/`.
 
-* 底層 apollo client 設定在 `services/apolloClient`
+* The core Apollo Client configuration is located in `services/apolloClient`
 
 ---
 
@@ -134,11 +134,11 @@ PrivateRoute --> src/pages/Login.tsx: if none authenticated
 ### MainLayout
 
 ### Menu
-跟 `router`, `.env` 及頁面連動，詳見「新增頁面流程」
+Linked with `router`, `.env`, and pages. See "Adding a New Page" for details.
 
-Menu List 基本架構
+Menu List Basic Structure
 ```
-// 透過 useMenu 確認 Menu api (permissionMenu) 是否有該分頁，並轉換為 ant design Menu 格式
+// `useMenu` hook checks if the page exists in the Menu API (permissionMenu) and converts it to Ant Design's Menu format.
 {
   key: 'system_account_groups',
   link: 'account-groups',
@@ -147,7 +147,7 @@ Menu List 基本架構
 },
 ```
 
-Menu 結構
+Menu Structure
 ```
 ├── MainMenu
 │   ├── Home ('/')
@@ -163,30 +163,30 @@ Menu 結構
 ```
 
 ### Router
-跟 `menu`, `.env` 及頁面連動，詳見「新增頁面流程」
+Linked with `menu`, `.env`, and pages. See "Adding a New Page" for details.
 
-Router List 基本架構
+Router List Basic Structure
 ```
-  // （Page Name 通常為自己 import 檔案的名稱，如果有兩個以上共用可參考 property extendComponent）
+  // (Page Name is typically the component name you import. Use `extendComponent` if sharing a component.)
   [Page Name]: {
-    title: 'Create New Branch', // MainLayout 上的 title
-    path: '/account-groups/create-branch', // router 路徑
+    title: 'Create New Branch', // Title displayed in MainLayout
+    path: '/account-groups/create-branch', // Route path
     crumb: ({ searchParams }: any) => [
       { title: 'System Management' },
       { title: 'Account Groups', link: 'account-groups' },
       { title: searchParams.get('branch') },
-    ], // 麵包屑
-    htmlTitle: ({ searchParams }: any) => `Edit Branch - ${searchParams.get('branch')}`, // document head 的 title
-    requiredParams: [{ param: 'branch', required: true }], // 必填 searchParams
-    importPath: 'SystemManagement/', // page 資料夾
-    menuName: 'system_account_groups', // 對應的 menu key（字串跟後端共用）
-    extendComponent: 'EditBranch', // 使用的 page component（如果跟其他的 Page 共用的話）
-    componentProps: { editType: EditAccountStatus.Edit }, // Page Name 或 extendComponent 所需的 props
+    ], // Breadcrumbs
+    htmlTitle: ({ searchParams }: any) => `Edit Branch - ${searchParams.get('branch')}`, // <title> in the document head
+    requiredParams: [{ param: 'branch', required: true }], // Required searchParams
+    importPath: 'SystemManagement/', // Page folder
+    menuName: 'system_account_groups', // Corresponding menu key (shared string with backend)
+    extendComponent: 'EditBranch', // The page component to use (if shared)
+    componentProps: { editType: EditAccountStatus.Edit }, // Props required by the Page Name component or extendComponent
   }
 ```
 
 ### Context
-引入點為 GlobalContext
+The entry point is GlobalContext
 ```
 const globalContextValues = {
   theme: themeContext,
@@ -195,13 +195,13 @@ const globalContextValues = {
   notification: notificationContext,
 }
 ```
-Context 內容
+Context Contents
 ```
 ├── themeContext
 │   ├── theme, setTheme // Light or Dark
 ├── authenticatedContext
 │   ├── isAuthenticated, setIsAuthenticated // Login or not
-│   ├── isForceLogout, setIsForceLogout // 控制是否顯示全域強制登出的通知訊息
+│   ├── isForceLogout, setIsForceLogout // Controls the global "force logout" notification
 ├── userSelfContext
 │   ├── username, setUsername
 │   ├── userEmail, setUserEmail
@@ -210,38 +210,39 @@ Context 內容
 │   ├── timeFormat, setTimeFormat
 │   ├── negativeShowMinus, setNegativeShowMinus
 ├── notificationContext
-│   ├── globalContextHolder // 統一放在 <GlobalContext.Provider> 裡
+│   ├── globalContextHolder // Placed within <GlobalContext.Provider> for global access
 │   ├── openGlobalNotification
-│   ├── globalNotificationSuccess // 顯示成功通知框
-│   ├── globalNotificationError // 顯示錯誤通知框
+│   ├── globalNotificationSuccess // Show success notification
+│   ├── globalNotificationError // Show error notification
 ```
 
 ### Hook
-| **Hook Name** | **功能** | **參數** | **回傳值** | **變數範例** | **輸出範例** |
+| **Hook Name** | **Description** | **Parameters** | **Returns** | **Example Input** | **Example Output** |
 |--|--|--|--|--|--|
 |||||||
-### Utils
 
-| **Function Name** | **功能** | **參數** | **回傳值** | **變數範例** | **輸出範例** |
+### Utils
+| **Function Name** | **Description** | **Parameters** | **Returns** | **Example Input** | **Example Output** |
 |--|--|--|--|--|--|
-| `formatTimestamp` | 根據目前時間顯示指定時間為多久之前 | `Date` | `string` | `(new Date(2025-02-20T06:36:07))` | "3 days ago"<br>"about 23 hours ago" |
-| `GraphQLErrorMsg` | 回傳 ApolloError 後端錯誤訊息或預設訊息 | `ApolloError` | `string` | `(GraphQLErrorMsg)` | "Data Fail"<br>（來自後端的字串） |
-| `formatNumber2Unit` | 縮寫顯示大數字<br>（1位數顯示2位小數<br>2位數顯示1位小數<br>3位數不顯示小數） | `number` | `string` | `(10500)`<br>`(9999)` | "10.5K"<br>"9.99K" |
-| `toCommas` | 每三位數之間加上逗號 | `number` | `string` | `(10500)`<br>`(9999.85)` | "10,000"<br>"9,999.85" |
-| `formatNegativeNumber` | 格式化負數 | value:`number`,<br>negativeShowMinus:`boolean`,<br>extraSymbol?:`string` | `string` | `(-10500, false)`<br>`(-9999.85, true, '%')` | "(10000)"<br>"-9999.85%" |
+| `formatTimestamp` | Displays time elapsed since a given date. | `Date` | `string` | `(new Date(2025-02-20T06:36:07))` | "3 days ago"<br>"about 23 hours ago" |
+| `GraphQLErrorMsg` | Returns a backend error message from an ApolloError or a default message. | `ApolloError` | `string` | `(GraphQLErrorMsg)` | "Data Fail"<br>(String from backend) |
+| `formatNumber2Unit` | Formats large numbers with unit suffixes (e.g., K, M).<br>(Rules: 1.00K-9.99K (2 decimals),<br>10.0K-99.9K (1 decimal),<br>100K+ (0 decimals)) | `number` | `string` | `(10500)`<br>`(9999)` | "10.5K"<br>"9.99K" |
+| `toCommas` | Adds commas as thousands separators. | `number` | `string` | `(10500)`<br>`(9999.85)` | "10,000"<br>"9,999.85" |
+| `formatNegativeNumber` | Formats negative numbers. If `negativeShowMinus` is false, wraps in parentheses. | value:`number`,<br>negativeShowMinus:`boolean`,<br>extraSymbol?:`string` | `string` | `(-10500, false)`<br>`(-9999.85, true, '%')` | "(10000)"<br>"-9999.85%" |
 
 ### Environment Variables (.env)
 ```
-// 顯示在 Menu 底下的版本號
+// Version number displayed in the Menu
 REACT_APP_VERSION=demo
 
-// API 串接 url
+// API endpoint URL
 REACT_APP_API_PATH=https://api.your-service.com/
 
-// 專案名稱 顯示在 Header 左側
+// Project title displayed in the Header
 REACT_APP_TITLE=Risk Management System
 
-// 該專案可顯示的 features，連動 Menu 及 Router，字串跟隨後端的腳步，逗號之間不加空格
+// Feature flags for the project. Controls Menu and Router visibility.
+// Strings must match backend definitions. Do not add spaces between commas.
 REACT_APP_ACTIVE_MAIN_FEATURE=feature_home,feature_dashboard,feature_admin
 REACT_APP_ACTIVE_SETTINGS_FEATURE=setting_profile,setting_password
 REACT_APP_ACTIVE_SYSTEM_FEATURE=system_account_groups
@@ -252,37 +253,36 @@ REACT_APP_ACTIVE_SYSTEM_FEATURE=system_account_groups
 
 ### framework & tools
 
-- 前端框架 [React](https://reactjs.org/docs/getting-started.html)。
-- 以 [TypeScript](https://www.typescriptlang.org/docs/) 管理 js types。
-- 使用前端元件庫 [Ant Design](https://ant.design/docs/react/introduce)。
-- 使用 [ESLint](https://eslint.org/) 確保 coding styles 一致。
-- 串接 API 使用 [GraphQL](https://graphql.org/learn/) 及 [Apollo](https://www.apollographql.com/docs/react)。
+- Front-end Framework: [React](https://reactjs.org/docs/getting-started.html).
+- Use [TypeScript](https://www.typescriptlang.org/docs/) for managing JavaScript types.
+- UI Library: [Ant Design](https://ant.design/docs/react/introduce).
+- Linter: [ESLint](https://eslint.org/) to enforce consistent coding styles.
+- API Integration: [GraphQL](https://graphql.org/learn/) & [Apollo](https://www.apollographql.com/docs/react).
 
 ### npm
 
 - npm version `9.5.1`，node.js version `21.3.0`
-- 安裝時使用 `npm install --force`。
-- `npm run start` 開啟專案
-- package.json script 相關設定：
-  例如 `build:prod` 要用 `.env.production` 環境設定檔，在 package.json script 中新增：
+- Run `npm run start` to start the development server.
+- package.json script script settings:
+  e.g., to use `.env.production` for the `build:prod` script, add the following to package.json scripts:
   `”build:prod": "dotenv -e .env.production craco build"`
 
 ### Git Workflow
 
-- prod branch 為 `main`。
-- dev branch 為 `next`。
-- 開發功能各自開 feature branch。
-- git 以 `rebase` 合併管理 branch。
-- commit type：
-  - `feat`: 新增/修改功能 (feature)。
-  - `fix`: 修補 bug (bug fix)。
-  - `docs`: 文件 (documentation)。
-  - `style`: 格式 (不影響程式碼運行的變動 `white-space`, `formatting`, `missing semi colons`, etc)。
-  - `refactor`: 重構 (既不是新增功能，也不是修補 bug 的程式碼變動)。
-  - `perf`: 改善效能 (A code change that improves performance)。
-  - `test`: 增加測試 (when adding missing tests)。
-  - `chore`: 建構程序或輔助工具的變動 (maintain)。
-  - `revert`: 撤銷回覆先前的 commit 例如：`revert: type(scope): subject` (回覆版本：xxxx)。
+- Production branch: `main`.
+- Development branch: `next`.
+- All new features must be developed in their own `feature/...` branch.
+- Use `git rebase` for merging and managing branches.
+- Commit Message Conventions:
+  - `feat`: A new feature
+  - `fix`: A bug fix
+  - `docs`: Documentation only changes
+  - `style`: Changes that do not affect the meaning of the code (`white-space`, `formatting`, `missing semi colons`, etc).
+  - `refactor`: A code change that neither fixes a bug nor adds a feature
+  - `perf`: A code change that improves performance
+  - `test`: Adding missing tests or correcting existing tests
+  - `chore`: Changes to the build process or auxiliary tools
+  - `revert`: Reverts a previous commit (e.g.,`revert: type(scope): subject`)
 
 ### Related Documents
 - Backend Documentation
